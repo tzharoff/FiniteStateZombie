@@ -14,6 +14,10 @@ public class ZombieAI : MonoBehaviour
     [SerializeField] private float minRotationDistance = 30f;
     [SerializeField] private float maxRotationDistance = 330f;
 
+    [Header("Zombie Chase Settings")]
+    [SerializeField] private float playerStartChaseDistance = 10f;
+    [SerializeField] private float playerStopChaseDistance = 15f;
+    
     public enum ZombieState
     {
         Wait,
@@ -32,10 +36,14 @@ public class ZombieAI : MonoBehaviour
 
     private ZombieMovement zombieMovement;
 
+    private Transform playerTransform;
+    private bool isChasing = false;
+
     // Start is called before the first frame update
     void Start()
     {
         zombieMovement = GetComponent<ZombieMovement>();
+        playerTransform = GameObject.FindWithTag("Player").transform;
     }
 
     // Update is called once per frame
@@ -44,9 +52,17 @@ public class ZombieAI : MonoBehaviour
         switch (zombieState)
         {
             case ZombieState.Wait:
+                if (ChasePlayer())
+                {
+                    InitChase();
+                }
                 ZombieWait();
                 break;
             case ZombieState.Wander:
+                if (ChasePlayer())
+                {
+                    InitChase();
+                }
                 ZombieWander();
                 break;
             case ZombieState.Chase:
@@ -59,7 +75,52 @@ public class ZombieAI : MonoBehaviour
                 break;
         }
     }
-    
+
+    private Vector3 PlayerPosition
+    {
+        get { return playerTransform.position; }
+    }
+
+    private float PlayerDistance
+    {
+        get { return Vector3.Distance(transform.position, PlayerPosition); }
+    }
+
+    private bool ChasePlayer()
+    {
+        if (isChasing)
+        {
+            if(PlayerDistance <= playerStopChaseDistance)
+            {
+                return true;
+            } else
+            {
+                isChasing = false;
+                return false;
+            }
+        } else
+        {
+            if(PlayerDistance <= playerStartChaseDistance)
+            {
+                isChasing = true;
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+    }
+
+    private void InitChase()
+    {
+        StopCoroutine(wanderingCoroutine);
+        StopCoroutine(waitingCoroutine);
+        isWaiting = false;
+        isWandering = false;
+        zombieMovement.IsMoving = true;
+        zombieState = ZombieState.Chase;
+    }
+
     private void ZombieWait()
     {
         if (!isWaiting)
@@ -98,7 +159,14 @@ public class ZombieAI : MonoBehaviour
 
     private void ZombieChase()
     {
-
+        if (ChasePlayer())
+        {
+            transform.LookAt(playerTransform);
+        } else
+        {
+            zombieMovement.IsMoving = false;
+            zombieState = ZombieState.Wait;
+        }
     }
 
     private void ZombieAttack()
