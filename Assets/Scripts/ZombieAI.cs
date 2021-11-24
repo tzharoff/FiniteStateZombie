@@ -17,7 +17,12 @@ public class ZombieAI : MonoBehaviour
     [Header("Zombie Chase Settings")]
     [SerializeField] private float playerStartChaseDistance = 10f;
     [SerializeField] private float playerStopChaseDistance = 15f;
-    
+
+    [Header("Zombie Attack Settings")]
+    [SerializeField] private float startAttackDistance = 3f;
+    [SerializeField] private float stopAttackDistance = 5f;
+    [SerializeField] private float attackCooldown = 1.5f;
+
     public enum ZombieState
     {
         Wait,
@@ -38,6 +43,8 @@ public class ZombieAI : MonoBehaviour
 
     private Transform playerTransform;
     private bool isChasing = false;
+
+    private bool canAttack = true;
 
     // Start is called before the first frame update
     void Start()
@@ -66,6 +73,11 @@ public class ZombieAI : MonoBehaviour
                 ZombieWander();
                 break;
             case ZombieState.Chase:
+                if(PlayerDistance <= startAttackDistance)
+                {
+                    zombieMovement.IsMoving = false;
+                    zombieState = ZombieState.Attack;
+                }
                 ZombieChase();
                 break;
             case ZombieState.Attack:
@@ -171,6 +183,24 @@ public class ZombieAI : MonoBehaviour
 
     private void ZombieAttack()
     {
+        if (canAttack)
+        {
+            //attack code
+            Debug.Log("Attacked the player!");
+            StartCoroutine(AttackCooldown());
+        } else
+        {
+            if(PlayerDistance > stopAttackDistance)
+            {
+                InitChase();
+            }
+        }
+    }
 
+    IEnumerator AttackCooldown()
+    {
+        canAttack = false;
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true;
     }
 }
