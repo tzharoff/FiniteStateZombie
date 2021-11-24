@@ -15,7 +15,7 @@ public class ZombieMovement : MonoBehaviour
     //our rigidbody for movement
     private CharacterController charController;
 
-
+    // Start is called before the first frame update
     void Start()
     {
         charController = GetComponent<CharacterController>();

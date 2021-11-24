@@ -30,12 +30,12 @@ public class ZombieAI : MonoBehaviour
     private bool isWandering = false;
     private Coroutine wanderingCoroutine;
 
-    private ZombieMovement move;
+    private ZombieMovement zombieMovement;
 
     // Start is called before the first frame update
     void Start()
     {
-        move = GetComponent<ZombieMovement>();
+        zombieMovement = GetComponent<ZombieMovement>();
     }
 
     // Update is called once per frame
@@ -88,9 +88,9 @@ public class ZombieAI : MonoBehaviour
 
     IEnumerator WalkTime()
     {
-        move.IsMoving = true;
+        zombieMovement.IsMoving = true;
         yield return new WaitForSeconds(Random.Range(minWanderTime, maxWanderTime));
-        move.IsMoving = false;
+        zombieMovement.IsMoving = false;
         isWaiting = false;
         zombieState = ZombieState.Wait;
         isWandering = false;
