@@ -135,6 +135,7 @@ public class ZombieAI : MonoBehaviour
 
     private void ZombieWait()
     {
+        //idle animation
         if (!isWaiting)
         {
             waitingCoroutine = StartCoroutine(GoWandering());
@@ -151,6 +152,7 @@ public class ZombieAI : MonoBehaviour
 
     private void ZombieWander()
     {
+        //walk animation
         if (!isWandering)
         {
             isWandering = true;
@@ -171,6 +173,7 @@ public class ZombieAI : MonoBehaviour
 
     private void ZombieChase()
     {
+        //arms out animation
         if (ChasePlayer())
         {
             transform.LookAt(playerTransform);
@@ -183,6 +186,7 @@ public class ZombieAI : MonoBehaviour
 
     private void ZombieAttack()
     {
+        //attack animation
         if (canAttack)
         {
             //attack code
